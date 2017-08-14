@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lzt.asyn.sysmgr.dao.AdverDao">
+	<insert id="insert" parameterType="com.lzt.asyn.sysmgr.model.Adver">
+		<selectKey resultType="Long" keyProperty="adverId" order="AFTER">
+			select last_insert_id()
+		</selectKey>
+		insert into cw_adver
+		(book_id,title,audit)
+		values
+		(#{bookId},#{title,jdbcType=VARCHAR},#{audit})
+	</insert>
+
+	<delete id="delete" parameterType="Long">
+		delete from cw_adver where
+		adver_id = #{id}
+	</delete>
+
+	<delete id="deleteByBookId" parameterType="Long">
+		delete from cw_adver where
+		book_id = #{id}
+	</delete>
+	<update id="update" parameterType="com.lzt.asyn.sysmgr.model.Adver">
+		update cw_adver
+		<set>
+			<if test="bookId != null and bookId != -1">book_id = #{bookId},</if>
+			<if test="title != null and title != ''">title = #{title},</if>
+			<if test="audit != null and audit != -1">audit = #{audit}</if>
+		</set>
+		where adver_id = #{adverId}
+	</update>
+	<select id="query" parameterType="com.lzt.asyn.sysmgr.model.Adver"
+		resultType="com.lzt.asyn.sysmgr.model.Adver">
+		<include refid="queryAdverCommon" />
+	</select>
+	<sql id="queryAdverCommon">
+		select adver_id adverId ,c1.title,c2.link,c1.book_id
+		bookId,c2.book_name bookName,audit
+		from( cw_adver c1
+		LEFT JOIN
+		(SELECT book_id,book_name,link from cw_book) c2
+		ON
+		c1.book_id=c2.book_id
+		)
+	</sql>
+
+	<select id="getById" parameterType="Long"
+		resultType="com.lzt.asyn.sysmgr.model.Adver">
+		<include refid="queryAdverCommon" />
+		where c1.adver_id = #{id}
+	</select>
+
+	<select id="queryByArgs" parameterType="com.lzt.asyn.sysmgr.model.Adver"
+		resultType="com.lzt.asyn.sysmgr.model.Adver">
+		<include refid="queryAdverCommon" />
+		<include refid="queryAdverWhere" />
+		order by c1.adver_id
+		<if test="beginRowNum!=null and rows!=null">
+			limit #{beginRowNum},#{rows}
+		</if>
+	</select>
+
+	<select id="queryByArgsCount" parameterType="com.lzt.asyn.sysmgr.model.Adver"
+		resultType="Long">
+		select count(1) from cw_adver t
+		<include refid="queryAdverWhere" />
+	</select>
+	<sql id="queryAdverWhere">
+		<where>
+			<if test="adverId != null and adverId != -1">
+				and adver_id = #{adverId}
+			</if>
+			<if test="bookId != null and bookId != -1">
+				and c1.book_id = #{bookId}
+			</if>
+			<if test="title != null and title != ''">
+				and title like concat('%',#{title},'%')
+			</if>
+			<if test="link != null and link != ''">
+				and c2.link = #{link}
+			</if>
+			<if test="bookName != null and bookName != ''">
+				and c2.bookName = #{bookName}
+			</if>
+			<if test="audit != null and audit != -1">
+				and audit = #{audit}
+			</if>
+		</where>
+	</sql>
+</mapper>

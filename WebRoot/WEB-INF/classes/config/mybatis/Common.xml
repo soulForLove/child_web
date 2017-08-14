@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lzt.asyn.common.dao.CommonDao">
+
+	<select id="queryDictList" resultType="com.lzt.asyn.common.model.DictDef">
+		select dict_type dictType,dict_class dictClass,entry_id entryId,entry_name entryName,
+			   entry_desc entryDesc,entry_desc2 entryDesc2,parent_entry_id parentEntryId from dict_def t
+		<where>
+			<if test="dictType != null"> and dict_type = #{dictType}</if>
+			<if test="dictClass != null"> and dict_class = #{dictClass}</if>
+			<if test="parentEntryId != null and parentEntryId != ''"> and parent_entry_id = #{parentEntryId}</if>
+		</where>
+	</select>
+	<!-- 附件 -->
+	<insert id="insertFsFile" parameterType="com.lzt.asyn.common.model.FsFileInfo">
+		insert into fs_file_info (uri,biz_id,biz_type) values (#{uri},#{bizId},#{bizType})
+	</insert>
+
+	<delete id="deleteFsFile">
+		delete from fs_file_info where biz_type = #{bizType} and biz_id = #{bizId}
+	</delete>
+	<select id="queryFsFile" resultType="com.lzt.asyn.common.model.FsFileInfo">
+		select id,uri,biz_id,biz_type bizType from fs_file_info t where biz_type = #{bizType} and biz_id = #{bizId} order by biz_id desc
+	</select>
+</mapper>

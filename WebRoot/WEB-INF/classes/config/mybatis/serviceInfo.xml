@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lzt.asyn.sysmgr.dao.ServiceInfoDao">
+	<resultMap type="com.lzt.asyn.sysmgr.model.ServiceInfo" id="ServiceInfo">
+		<result property="serviceId" column="service_id" />
+		<result property="title" column="title" />
+		<result property="submitTime" column="submit_time" />
+		<result property="handleTime" column="handle_time" />
+		<result property="detail" column="detail" />
+		<result property="ip" column="ip" />
+		<result property="userId" column="user_id" />
+	</resultMap>
+	<insert id="insert" parameterType="com.lzt.asyn.sysmgr.model.ServiceInfo">
+		<selectKey resultType="Long" keyProperty="serviceId" order="AFTER">
+			select last_insert_id()
+		</selectKey>
+		insert into cw_service
+		(title,submit_time,handle_time,detail,ip,user_id)
+		values
+		(#{title,jdbcType=VARCHAR},now()+0,#{handleTime,jdbcType=VARCHAR},#{detail,jdbcType=VARCHAR},#{ip,jdbcType=VARCHAR},#{userId,jdbcType=VARCHAR})
+	</insert>
+	<delete id="delete" parameterType="String">
+		delete from cw_service where
+		service_id = #{id}
+	</delete>
+
+	<update id="update" parameterType="com.lzt.asyn.sysmgr.model.ServiceInfo">
+		update cw_service s 
+
+		<set>
+			<if test="userId != null and userId != ''">user_id = #{userId},</if>
+			<if test="title != null and title != ''">title = #{title},</if>
+			<if test="submitTime != null and submitTime != ''">submit_time = #{submitTime},</if>
+			<if test="handleTime != null and handleTime != ''">handle_time = #{handleTime},</if>
+			<if test="detail != null and detail != ''">detail = #{detail},</if>
+			<if test="ip != null and ip != ''">ip = #{ip},</if>
+		</set>
+		WHERE  service_id = #{serviceId}
+	</update>
+
+	<select id="getById" parameterType="Long" resultType="com.lzt.asyn.sysmgr.model.ServiceInfo">
+		<include refid="searchUser" />
+		where service_id = #{id}
+	</select>
+	<select id="queryByArgs" parameterType="com.lzt.asyn.sysmgr.model.ServiceInfo"
+		resultType="com.lzt.asyn.sysmgr.model.ServiceInfo">
+		<include refid="searchUser" />
+		<include refid="queryServiceInfoWhere" />
+		order by t.service_id
+		<if test="beginRowNum!=null and rows!=null">
+			limit #{beginRowNum},#{rows}
+		</if>
+	</select>
+	<!-- 关联到cw_user表查询对应的user_name  ===> left join-->
+	<sql id="searchUser">
+		select service_id serviceId,title,submit_time+0 submitTime,handle_time+0 handleTime,detail,ip,t.user_id userId,u.user_name userName
+		from cw_service t 
+		left join    cw_user u
+		on t.user_id=u.user_id
+	</sql>
+	
+	<select id="queryByArgsCount" parameterType="com.lzt.asyn.sysmgr.model.ServiceInfo"
+		resultType="Long">
+		select count(1) from cw_service t
+		<include refid="queryServiceInfoWhere" />
+	</select>
+	<sql id="queryServiceInfoWhere">
+		<where>
+			<if test="serviceId != null and serviceId != -1">
+				and service_id = #{serviceId}
+			</if>
+			<if test="userId != null and userId != ''">
+				and user_id= like concat('%',#{userId},'%')
+			</if>
+			<if test="title != null and title != ''">
+				and title like concat('%',#{title},'%')
+			</if>
+			<if test="submitTime != null and submitTime != ''">
+				and submit_time = #{submitTime}
+			</if>
+			<if test="handleTime != null and handleTime != ''">
+				and handle_time = #{handleTime}
+			</if>
+			<if test="detail != null and detail != ''">
+				and detail like concat('%',#{detail},'%')
+			</if>
+			<if test="ip != null and ip != ''">
+				and ip = #{ip}
+			</if>
+		</where>
+	</sql>
+</mapper>

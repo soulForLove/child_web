@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lzt.asyn.sysmgr.dao.ResourceDao">
+
+	<resultMap type="com.lzt.asyn.sysmgr.model.Resource" id="resResource">
+		<result property="resId" column="res_id"/>
+		<result property="resName" column="res_name"/>
+		<result property="parentRes" column="parent_res"/>
+		<result property="resLevel" column="res_level"/>
+		<result property="resType" column="res_type"/>
+		<result property="resIndex" column="res_index"/>
+		<result property="resTarget" column="res_target"/>
+		<result property="isLeaf" column="is_leaf"/>
+		<result property="iconSmall" column="icon_small"/>
+		<result property="iconLarge" column="icon_large"/>
+		<result property="styleClass" column="style_class"/>
+		<result property="isShortcut" column="is_shortcut"/>
+		<result property="status" column="status"/>
+		<result property="resDesc" column="res_desc"/>
+		<result property="createTime" column="create_time"/>
+		<result property="authorized" column="authorized"/>
+	</resultMap>
+	
+	<sql id="queryResourceCommon">
+		select res_id,res_name,parent_res,res_level,res_type,res_index,res_target,is_leaf,icon_small,icon_large,style_class,is_shortcut,status,res_desc,create_time+0 create_time 
+		from cw_Sresource t 
+	</sql>
+	
+	<select id="queryAll" resultMap="resResource">
+		<include refid="queryResourceCommon"/>
+		where status = 1
+		order by parent_res,res_index
+	</select>
+	
+	<select id="queryAllLeftJoinRoleId" parameterType="Integer" resultMap="resResource">
+		select t.res_id,res_name,parent_res,res_level,res_type,res_index,res_target,is_leaf,icon_small,icon_large,style_class,is_shortcut,status,res_desc,create_time+0 create_time 
+			,case when t2.res_id is null then 0 else 1 end authorized
+		from cw_Sresource t 
+		left join (select res_id from sm_role_res where oprole_id =#{roleId} and is_operator = 0) t2 on t.res_id = t2.res_id
+	</select>
+	
+	<select id="queryByRoleId" parameterType="Integer" resultMap="resResource">
+		<include refid="queryResourceCommon"/>
+		where res_id in (select res_id from sm_role_res where oprole_id = #{roleId} and is_operator = 0)
+	</select>
+	
+	<select id="queryByUserId" parameterType="Long" resultMap="resResource">
+		<include refid="queryResourceCommon"/>
+		where res_id in (
+			select res_id from sm_role_res where oprole_id in (
+				select role_id from sm_user_role where user_id = #{userId}
+			) and is_operator = 0
+		)
+	</select>
+	<!-- 
+	
+	<insert id="insert" parameterType="com.wp.stone.biz.sysmgr.model.Resource">
+		<selectKey resultType="Integer" keyProperty="resId" order="AFTER"> 
+		    select last_insert_id()
+		</selectKey>
+		insert into sm_resource
+			(res_id,res_name,parent_res,res_level,res_type,res_index,res_target,is_leaf,icon_small,icon_large,style_class,is_shortcut,status,res_desc,create_time)
+		values
+			(#{resId},#{resName},#{parentRes},#{resLevel},#{resType},#{resIndex},#{resTarget,jdbcType=VARCHAR},#{isLeaf},#{iconSmall,jdbcType=VARCHAR},#{iconLarge,jdbcType=VARCHAR},#{styleClass,jdbcType=VARCHAR},#{isShortcut,jdbcType=NUMERIC},#{status},#{resDesc,jdbcType=VARCHAR},str_to_date(#{createTime,jdbcType=VARCHAR},'%Y%m%d%H%i%s'))
+	</insert>
+
+	<delete id="delete" parameterType="String">
+		delete from sm_resource where res_id = #{id}
+	</delete>
+
+	<update id="update" parameterType="com.wp.stone.biz.sysmgr.model.Resource">
+		update sm_resource
+		<set>
+			<if test="resName != null and resName != ''">res_name = #{resName},</if>
+			<if test="parentRes != null and parentRes != -1">parent_res = #{parentRes},</if>
+			<if test="resLevel != null and resLevel != -1">res_level = #{resLevel},</if>
+			<if test="resType != null and resType != -1">res_type = #{resType},</if>
+			<if test="resIndex != null and resIndex != ''">res_index = #{resIndex},</if>
+			<if test="resTarget != null and resTarget != ''">res_target = #{resTarget},</if>
+			<if test="isLeaf != null and isLeaf != -1">is_leaf = #{isLeaf},</if>
+			<if test="iconSmall != null and iconSmall != ''">icon_small = #{iconSmall},</if>
+			<if test="iconLarge != null and iconLarge != ''">icon_large = #{iconLarge},</if>
+			<if test="styleClass != null and styleClass != ''">style_class = #{styleClass},</if>
+			<if test="isShortcut != null and isShortcut != -1">is_shortcut = #{isShortcut},</if>
+			<if test="status != null and status != -1">status = #{status},</if>
+			<if test="resDesc != null and resDesc != ''">res_desc = #{resDesc},</if>
+			<if test="createTime != null and createTime != ''">create_time = str_to_date(#{createTime},'%Y%m%d%H%i%s'),</if>
+		</set>
+		where res_id = #{resId}
+	</update>
+	
+	<select id="getById" parameterType="Long" resultMap="resResource">
+		<include refid="queryResourceCommon"/> where res_id = #{id} 
+	</select>
+	
+	<select id="queryByArgs" parameterType="com.wp.stone.biz.sysmgr.model.ResourceReq" resultMap="resResource">
+		<include refid="queryResourceCommon"/>
+		<include refid="queryResourceWhere"/>
+		 o	rder by t.res_id
+		<if test="beginRowNum!=null and rows!=null">
+			 limit #{beginRowNum},#{rows}
+		</if>
+	</select>
+	
+	<select id="queryByArgsCount" parameterType="com.wp.stone.biz.sysmgr.model.ResourceReq" resultType="Integer">
+		select count(1) from sm_resource t
+		<include refid="queryResourceWhere"/>
+	</select>
+
+	<sql id="queryResourceWhere">
+		<where>
+			<if test="resId != null and resId != -1">
+				and res_id = #{resId}
+			</if>
+			<if test="resName != null and resName != ''">
+				and res_name = #{resName}
+			</if>
+			<if test="parentRes != null and parentRes != -1">
+				and parent_res = #{parentRes}
+			</if>
+			<if test="resLevel != null and resLevel != -1">
+				and res_level = #{resLevel}
+			</if>
+			<if test="resType != null and resType != -1">
+				and res_type = #{resType}
+			</if>
+			<if test="resIndex != null and resIndex != ''">
+				and res_index = #{resIndex}
+			</if>
+			<if test="resTarget != null and resTarget != ''">
+				and res_target = #{resTarget}
+			</if>
+			<if test="isLeaf != null and isLeaf != -1">
+				and is_leaf = #{isLeaf}
+			</if>
+			<if test="iconSmall != null and iconSmall != ''">
+				and icon_small = #{iconSmall}
+			</if>
+			<if test="iconLarge != null and iconLarge != ''">
+				and icon_large = #{iconLarge}
+			</if>
+			<if test="styleClass != null and styleClass != ''">
+				and style_class = #{styleClass}
+			</if>
+			<if test="isShortcut != null and isShortcut != -1">
+				and is_shortcut = #{isShortcut}
+			</if>
+			<if test="status != null and status != -1">
+				and status = #{status}
+			</if>
+			<if test="resDesc != null and resDesc != ''">
+				and res_desc = #{resDesc}
+			</if>
+			<if test="createTime != null and createTime != ''">
+				and create_time = str_to_date(#{createTime},'%Y%m%d')
+			</if>
+		</where>
+	</sql>
+ -->
+</mapper>

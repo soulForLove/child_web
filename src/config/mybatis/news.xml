@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lzt.asyn.sysmgr.dao.NewsDao">
+	<resultMap type="com.lzt.asyn.sysmgr.model.News" id="News">
+		<result property="newsId" column="news_id" />
+		<result property="title" column="title" />
+		<result property="detail" column="detail" />
+		<result property="newstype" column="newstype" />
+		<result property="publisher" column="publisher" />
+		<result property="time" column="time" />
+		<result property="audit" column="audit" />
+	</resultMap>
+	<insert id="insert" parameterType="com.lzt.asyn.sysmgr.model.News">
+		<selectKey resultType="Long" keyProperty="newsId" order="AFTER">
+			select last_insert_id()
+		</selectKey>
+		insert into cw_news
+		(title,detail,newstype,publisher,time,audit)
+		values
+		(#{title,jdbcType=VARCHAR},#{detail,jdbcType=VARCHAR},#{newstype,jdbcType=INTEGER},#{publisher,jdbcType=VARCHAR},now()+0,#{audit,jdbcType=VARCHAR})
+	</insert>
+
+	<delete id="delete" parameterType="String">
+		delete from cw_news where
+		news_id = #{id}
+	</delete>
+
+	<update id="update" parameterType="com.lzt.asyn.sysmgr.model.News">
+		update cw_news
+		<set>
+			<if test="title != null and title != ''">title = #{title},</if>
+			<if test="detail != null and detail != ''">detail = #{detail},</if>
+			<if test="newstype != null and newstype != -1">newstype = #{newstype},</if>
+			<if test="publisher != null and publisher != ''">publisher = #{publisher},</if>
+			<if test="time != null and time != ''">time = #{time},</if>
+			<if test="audit != null and audit != -1">audit = #{audit}</if>
+		</set>
+		where news_id = #{newsId}
+	</update>
+	<sql id="queryNewsCommon">
+		select
+		news_id,title,detail,newstype,publisher,time+0 time,audit
+		from cw_news t
+	</sql>
+
+	<select id="getById" parameterType="Long" resultMap="News">
+		<include refid="queryNewsCommon" />
+		where news_id = #{id}
+	</select>
+
+	<select id="queryByArgs" parameterType="com.lzt.asyn.sysmgr.model.News"
+		resultMap="News">
+		<include refid="queryNewsCommon" />
+		<include refid="queryNewsWhere" />
+		order by t.news_id
+		<if test="beginRowNum!=null and rows!=null">
+			limit #{beginRowNum},#{rows}
+		</if>
+	</select>
+	<select id="query" parameterType="com.lzt.asyn.sysmgr.model.News"
+		resultMap="News">
+		<include refid="queryNewsCommon" />
+	</select>
+	
+	<select id="queryByArgsCount" parameterType="com.lzt.asyn.sysmgr.model.News"
+		resultType="Long">
+		select count(1) from cw_news t
+		<include refid="queryNewsWhere" />
+	</select>
+	<sql id="queryNewsWhere">
+		<where>
+			<if test="newsId != null and newsId != -1">
+				and news_id = #{newsId}
+			</if>
+			<if test="title != null and title != ''">
+				and title like concat('%',#{title},'%')
+			</if>
+			<if test="detail != null and detail != ''">
+				and detail like concat('%',#{detail},'%')
+			</if>
+			<if test="newstype != null and newstype != ''">
+				and newstype =#{newstype}
+			</if>
+			<if test="publisher != null and publisher != ''">
+				and publisher =#{publisher}
+			</if>
+			<if test="time != null and time != ''">
+				and time = #{time}
+			</if>
+			<if test="audit != null and audit != -1">
+				and audit = #{audit}
+			</if>
+		</where>
+	</sql>
+</mapper>

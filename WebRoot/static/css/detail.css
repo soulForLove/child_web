@@ -1,0 +1,364 @@
+﻿.topbox {
+	height: 40px;
+	margin: 0 auto;
+	width: 1000px;
+	font-size: 16px;
+	color: gray;
+}
+
+.welcome {
+	font-size: 16px;
+	line-height: 40px;
+}
+
+.searchBar {
+	float: right;
+	font-size: 16px;
+	height: 40px;
+	padding-top: 8px;
+}
+
+.topbox a {
+	color: gray;
+	font-size: 16px;
+	line-height: 40px;
+}
+
+.topbox a:hover {
+	color: green;
+}
+
+.news-detail .header {
+	text-align: center;
+	background: #eee;
+	width: 1366px;
+}
+
+.news-detail  .header {
+	background: none repeat scroll 0 0 #F2F1EF;
+	height: 120px;
+}
+
+.news-detail  .header .headerbox {
+	height: 120px;
+	margin: 0 auto;
+	width: 1000px;
+}
+
+.news-detail  .header .headerbox .headerleft {
+	background: url("../images/logo2.png") no-repeat;
+	float: left;
+	height: 120px;
+	padding-left: 344px;
+	width: 174px;
+}
+
+.news-detail  .nav {
+	background: url("../images/navline.jpg") repeat-x scroll 0 0 transparent;
+	border-bottom: 1px solid #B5B5B5;
+	border-top: 1px solid #B5B5B5;
+	font-family: "微软雅黑";
+	height: 44px;
+	width: 1366px;
+}
+
+.news-detail  .nav .topul {
+	height: 44px;
+	margin: 0px auto;
+	width: 1000px;
+}
+
+.news-detail  .nav .topul li {
+	width: 105px;
+	height: 28px;
+	float: left;
+	text-align: center;
+	margin: 8px;
+}
+
+.news-detail  .nav .topul li>a {
+	text-align: center;
+	line-height: 28px;
+	color: black;
+	font-size: 16px;
+}
+
+.news-detail  .nav .topul li>a:hover {
+	color: green;
+}
+
+.news-detail .details {
+	width: 1000px;
+	margin: 0 auto;
+}
+
+.news-detail .details .tip {
+	height: 40px;
+	font-size: 14px;
+	line-height: 40px;
+	margin-left: 20px;
+	width: 100%;
+}
+
+.news-detail .details .tip p>a {
+	color: black;
+}
+
+.news-detail .details .tip p>a:hover {
+	color: green;
+}
+
+.news-detail .details .ad1 {
+	margin: 0 auto;
+	width: 100%;
+	height: 140px;
+}
+/* .news-detail .details .news{
+	height: 630px;
+} */
+.news-detail .details .news .newsnav {
+	float: left;
+	margin-top: 20px;
+	width: 250px;
+	border: 1px solid #C9C9C9;
+}
+
+.news-detail .details .news .newsnav>p,.news-detail .details .news .message>p
+	{
+	height: 40px;
+	font-size: 22px;
+	padding-left: 20px;
+	line-height: 40px;
+	border-bottom: 1px solid #C9C9C9;
+}
+
+.news-detail .details .news .newsnav ul li {
+	height: 40px;
+	line-height: 40px;
+}
+
+.news-detail .details .news .newsnav ul li>a {
+	font-size: 18px;
+	color: black;
+	padding-left: 30px;
+}
+
+.news-detail .details .news .message {
+	margin-top: 20px;
+	float: right;
+	width: 700px;
+	border: 1px solid #C9C9C9;
+}
+
+.news-detail .friendlink .friendul {
+	clear: both;
+	height: 40px;
+	width: 1000px;
+	margin: 0 auto;
+	border-bottom: 1px solid #C9C9C9;
+	border-top: 1px solid #C9C9C9;
+}
+
+.news-detail .friendlink .friendul li {
+	width: 125px;
+	float: left;
+	line-height: 40px;
+	text-align: center;
+}
+
+.news-detail .friendlink .friendul li a {
+	color: black;
+	font-size: 16px;
+}
+
+.news-detail .footer {
+	height: 60px;
+	width: 1000px;
+	margin: 0 auto;
+	text-align: center;
+	font-size: 16px;
+	color: gray;
+}
+
+.infomation .info {
+	margin-top: 20px;
+	border-top: 1px dotted #b3cee4;
+	font-size: 14px;
+	line-height: 28px;
+	padding: 0px 20px 10px 37px;
+	line-height: 23px;
+	min-height: 60px;
+	_height: 60px;
+}
+/* 资讯列表 */
+.detailByList ul li {
+	height: 40px;
+	line-height: 40px;
+	padding-left: 10px;
+	position: relative;
+}
+
+.detailByList .detailByList-ul a {
+	position: absolute;
+	color: black;
+	font-size: 14px;
+	overflow: auto;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	width: 460px;
+}
+
+.detailByList .detailByList-ul span {
+	float: right;
+	color: gray;
+	padding-right: 10px;
+}
+
+.detailByList .detailByList-ul p,.detailByOne>p {
+	height: 40px;
+	color: black;
+	padding: 10px;
+	font-size: 18px;
+	font-weight: bold;
+	text-align: center;
+	border-bottom: 1px solid gray;
+}
+/* 资讯 */
+.detailByOne {
+	min-height: 400px;
+	position: relative;
+}
+
+.detailByOne .title>p {
+	height: 30px;
+	color: #84C23F;
+	padding: 5px;
+	font-size: 16px;
+	font-weight: bold;
+	text-align: center;
+}
+
+.detailByOne .title>span {
+	float: right;
+}
+
+.detailByOne .infomation {
+	clear: both;
+}
+
+.detailByOne .infomation .info {
+	overflow: auto;
+	padding-top: 10px;
+	border-bottom: 1px dotted #b3cee4;
+}
+
+.detailByOne .infomation .discuss-place {
+	margin-bottom: 30px;
+}
+
+.detailByOne .infomation .discuss-place .answer {
+	padding: 10px;
+	border-bottom: 1px dotted #b3cee4;
+}
+
+.detailByOne .infomation .discuss-place .answer  .floor_info {
+	color: #8c8a8c;
+	padding: 2px 0 7px 0;
+}
+
+.detailByOne .infomation .discuss-place .answer .floor_info .name {
+	color: #333;
+}
+
+.detailByOne .infomation .discuss-place .answer .floor_info .num {
+	font-family: tahoma Helvetica, sans-serif;
+	font-size: 14px;
+}
+
+.detailByOne .infomation .discuss-place .answer .comment {
+	font-size: 14px;
+	line-height: 28px;
+	padding: 0px 20px 10px 37px;
+	line-height: 23px;
+	min-height: 60px;
+	_height: 60px;
+}
+
+.detail {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: none;
+}
+
+.tcdPageCode {
+	padding: 15px 20px;
+	text-align: left;
+	color: #ccc;
+}
+
+.tcdPageCode a {
+	display: inline-block;
+	color: #428bca;
+	display: inline-block;
+	height: 25px;
+	line-height: 25px;
+	padding: 0 10px;
+	border: 1px solid #ddd;
+	margin: 0 2px;
+	border-radius: 4px;
+	vertical-align: middle;
+}
+
+.tcdPageCode a:hover {
+	text-decoration: none;
+	border: 1px solid #428bca;
+}
+
+.tcdPageCode span.current {
+	display: inline-block;
+	height: 25px;
+	line-height: 25px;
+	padding: 0 10px;
+	margin: 0 2px;
+	color: #fff;
+	background-color: #428bca;
+	border: 1px solid #428bca;
+	border-radius: 4px;
+	vertical-align: middle;
+}
+
+.tcdPageCode span.disabled {
+	display: inline-block;
+	height: 25px;
+	line-height: 25px;
+	padding: 0 10px;
+	margin: 0 2px;
+	color: #bfbfbf;
+	background: #f2f2f2;
+	border: 1px solid #bfbfbf;
+	border-radius: 4px;
+	vertical-align: middle;
+}
+.main_tit {
+  border-bottom: 1px solid #EEE;
+  color: #444;
+  font-size: 18px;
+  margin: 0 0 20px;
+  padding: 0 0 10px;
+  text-align: center;
+}
+.blue {
+  color: #1E7BB3;
+}
+.red {
+  color: red;
+}
+

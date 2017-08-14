@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lzt.asyn.sysmgr.dao.HistoryDao">
+	<!-- <resultMap type="com.lzt.asyn.sysmgr.model.History" id="History">
+		<result property="hisId" column="his_id" />
+		<result property="newsId" column="news_id" />
+		<result property="title" column="title" />
+		<result property="userId" column="user_id" />
+		<result property="userName" column="user_name" />
+		<result property="loginIp" column="login_ip" />
+		<result property="time" column="time" />
+		<result property="detail" column="detail" />
+		<result property="type" column="type" />
+	</resultMap> -->
+	<insert id="insert" parameterType="com.lzt.asyn.sysmgr.model.History">
+		<selectKey resultType="Long" keyProperty="hisId" order="AFTER">
+			select last_insert_id()
+		</selectKey>
+		insert into cw_history
+		(news_id,user_id,login_ip,time,detail,type)
+		values
+		(#{newsId,jdbcType=NUMERIC},#{userId,jdbcType=NUMERIC},#{loginIp,jdbcType=VARCHAR},now()+0,#{detail},#{type,jdbcType=NUMERIC})
+	</insert>
+
+	<delete id="delete" parameterType="String">
+		delete from cw_history where
+		his_id = #{id}
+	</delete>
+
+	<update id="update" parameterType="com.lzt.asyn.sysmgr.model.History">
+		update cw_history
+		<set>
+			<if test="newsId != null and newsId != -1">news_id = #{newsId},</if>
+			<if test="userId != null and userId != -1">user_id = #{userId},</if>
+			<if test="loginIp != null and loginIp != ''">login_ip = #{loginIp},</if>
+			<if test="time != null and time != ''">time = #{time},</if>
+			<if test="detail != null and detail != ''">detail = #{detail},</if>
+			<if test="type != null and type != -1">type = #{type}</if>
+		</set>
+		where his_id = #{hisId}
+	</update>
+	<!-- <sql id="queryHistoryCommon">
+		select
+		his_id,news_id,user_id,login_ip,time+0 time,detail,type
+		from cw_history t
+	</sql> -->
+
+	<select id="getById" parameterType="Long" resultType="com.lzt.asyn.sysmgr.model.History">
+		<include refid="queryHistoryCommon" />
+		where his_id = #{id}
+	</select>
+	<sql id="queryHistoryCommon">
+		SELECT
+		his_id hisId,c1.news_id newsId,c1.user_id userId,login_ip loginIp,time+0 time,detail,type,c2.title,c3.user_name userName,c2.newstype from(
+		(
+		cw_history c1
+		LEFT JOIN
+		(SELECT news_id,title,newstype from cw_news) c2
+		ON
+		c1.news_id=c2.news_id
+		)
+		LEFT JOIN
+		(SELECT user_id,user_name FROM cw_user) c3
+		ON c1.user_id=c3.user_id
+		)	
+	</sql>
+	<select id="queryByArgs" parameterType="com.lzt.asyn.sysmgr.model.History"
+		resultType="com.lzt.asyn.sysmgr.model.History">
+		<include refid="queryHistoryCommon" />
+		<include refid="queryHistoryWhere" />
+		order by c1.his_id
+		<if test="beginRowNum!=null and rows!=null">
+			limit #{beginRowNum},#{rows}
+		</if>
+	</select>
+	<select id="query" parameterType="com.lzt.asyn.sysmgr.model.History"
+		resultType="com.lzt.asyn.sysmgr.model.History">
+		<include refid="queryHistoryCommon" />
+	</select>
+
+	<select id="queryByArgsCount" parameterType="com.lzt.asyn.sysmgr.model.History"
+		resultType="Long">
+		select count(1) from cw_history c1
+		<include refid="queryHistoryWhere" />
+	</select>
+	<sql id="queryHistoryWhere">
+		<where>
+			<if test="newsId != null and newsId != -1">
+				and c1.news_id = #{newsId}
+			</if>
+			<if test="userId != null and userId != -1">
+				and c1.user_id = #{userId}
+			</if>
+			<if test="loginIp != null and loginIp != ''">
+				and login_ip = #{loginIp}
+			</if>
+			<if test="time != null and time != ''">
+				and time = #{time}
+			</if>
+			<if test="detail != null and detail != ''">
+				and detail = #{detail}
+			</if>
+			<if test="type != null and type != -1">
+				and type = #{type}
+			</if>
+		</where>
+	</sql>
+</mapper>

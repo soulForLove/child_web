@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lzt.asyn.sysmgr.dao.BookDao">
+	<resultMap type="com.lzt.asyn.sysmgr.model.Book" id="Book">
+		<result property="bookId" column="book_id" />
+		<result property="bookName" column="book_name" />
+		<result property="bookPrice" column="book_price" />
+		<result property="summary" column="summary" />
+		<result property="publishInfo" column="publish_info" />
+		<result property="link" column="link" />
+	</resultMap>
+	<insert id="insert" parameterType="com.lzt.asyn.sysmgr.model.Book">
+		<selectKey resultType="Long" keyProperty="bookId" order="AFTER">
+			select last_insert_id()
+		</selectKey>
+		insert into cw_book
+		(book_name,book_price,summary,publish_info,link)
+		values
+		(#{bookName,jdbcType=VARCHAR},#{bookPrice,jdbcType=VARCHAR},#{summary,jdbcType=VARCHAR},#{publishInfo,jdbcType=VARCHAR},#{link,jdbcType=VARCHAR})
+	</insert>
+
+	<delete id="delete" parameterType="String">
+		delete from cw_book where
+		book_id = #{id}
+	</delete>
+
+	<update id="update" parameterType="com.lzt.asyn.sysmgr.model.Book">
+		update cw_book
+		<set>
+			<if test="bookName != null and bookName != ''">book_name = #{bookName},</if>
+			<if test="bookPrice != null and bookPrice != ''">book_price = #{bookPrice},</if>
+			<if test="summary != null and summary != ''">summary = #{summary},</if>
+			<if test="publishInfo != null and publishInfo != ''">publish_info = #{publishInfo},</if>
+			<if test="link != null and link != ''">link = #{link},</if>
+		</set>
+		where book_id = #{bookId}
+	</update>
+	<sql id="queryBookCommon">
+		select
+		book_id,book_name,book_price,summary,publish_info,link
+		from cw_book t
+	</sql>
+	<select id="query" parameterType="com.lzt.asyn.sysmgr.model.Book" resultMap="Book">
+		<include refid="queryBookCommon"/>
+	</select>
+	<select id="getById" parameterType="Long" resultMap="Book">
+		<include refid="queryBookCommon" />
+		where book_id = #{id}
+	</select>
+
+	<select id="queryByArgs" parameterType="com.lzt.asyn.sysmgr.model.Book"
+		resultMap="Book">
+		<include refid="queryBookCommon" />
+		<include refid="queryBookWhere" />
+		order by t.book_id
+		<if test="beginRowNum!=null and rows!=null">
+			limit #{beginRowNum},#{rows}
+		</if>
+	</select>
+
+	<select id="queryByArgsCount" parameterType="com.lzt.asyn.sysmgr.model.Book"
+		resultType="Long">
+		select count(1) from cw_book t
+		<include refid="queryBookWhere" />
+	</select>
+	<sql id="queryBookWhere">
+		<where>
+			<if test="bookId != null and bookId != -1">
+				and book_id = #{bookId}
+			</if>
+			<if test="bookName != null and bookName != ''">
+				and book_name like concat('%',#{bookName},'%') 
+			</if>
+			<if test="bookPrice != null and bookPrice != -1">
+				and book_price = #{bookPrice}
+			</if>
+			<if test="summary != null and summary != ''">
+				and summary like concat('%',#{summary},'%')
+			</if>
+			<if test="publishInfo != null and publishInfo != ''">
+				and publish_info = #{publishInfo}
+			</if>
+			<if test="link != null and link != ''">
+				and link = #{link}
+			</if>
+
+		</where>
+	</sql>
+</mapper>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lzt.asyn.sysmgr.dao.ReportDao">
+	<resultMap type="com.lzt.asyn.sysmgr.model.Report" id="Report">
+		<result property="reportId" column="report_id" />
+		<result property="userId" column="user_id" />
+		<result property="newsId" column="news_id" />
+		<result property="detail" column="detail" />
+		<result property="time" column="time" />
+		<result property="ip" column="ip" />
+	</resultMap>
+	<insert id="insert" parameterType="com.lzt.asyn.sysmgr.model.Report">
+		<selectKey resultType="Long" keyProperty="reportId" order="AFTER">
+			select last_insert_id()
+		</selectKey>
+		insert into cw_report
+		(news_id,user_id,detail,time,ip)
+		values
+		(#{newsId,jdbcType=VARCHAR},#{userId,jdbcType=VARCHAR},#{detail,jdbcType=VARCHAR},now()+0,#{ip,jdbcType=VARCHAR})
+	</insert>
+
+	<delete id="delete" parameterType="String">
+		delete from cw_report where
+		report_id = #{id}
+	</delete>
+
+	<update id="update" parameterType="com.lzt.asyn.sysmgr.model.Report">
+		update cw_report
+		<set>
+			<if test="newsId != null and newsId != ''">news_id = #{newsId},</if>
+			<if test="userId != null and userId != ''">user_id = #{userId},</if>
+			<if test="detail != null and detail != ''">detail = #{detail},</if>
+			<if test="time != null and time != ''">time = #{time},</if>
+			<if test="ip != null and ip != ''">ip = #{ip}</if>
+		</set>
+		where report_id = #{reportId} 
+	</update>
+
+	<select id="getById" parameterType="Long" resultType="com.lzt.asyn.sysmgr.model.Report">
+		<include refid="searchOtherSql" />
+		where report_id = #{id}
+	</select>
+	<sql id="searchOtherSql">
+		SELECT
+		c1.report_id reportId,c1.user_id userId,c1.news_id newsId,c1.detail,c1.time+0 time,c1.ip from(
+		(
+		cw_report c1
+		LEFT JOIN
+		(SELECT news_id from cw_news) c2
+		ON
+		c1.news_id=c2.news_id
+		)
+		LEFT JOIN
+		(SELECT user_id FROM cw_user) c3
+		ON c1.user_id=c3.user_id
+		)
+	</sql>
+	<select id="queryByArgs" parameterType="com.lzt.asyn.sysmgr.model.Report"
+		resultType="com.lzt.asyn.sysmgr.model.Report">
+		<include refid="searchOtherSql" />
+		<include refid="queryReportWhere" />
+		order by c1.report_id
+		<if test="beginRowNum!=null and rows!=null">
+			limit #{beginRowNum},#{rows}
+		</if>
+	</select>
+
+	<select id="queryByArgsCount" parameterType="com.lzt.asyn.sysmgr.model.Report"
+		resultType="Long">
+		select count(1) from cw_report c1
+		<include refid="queryReportWhere" />
+	</select>
+	<select id="queryByUserCount" parameterType="com.lzt.asyn.sysmgr.model.Report"
+		resultType="Long">
+		select count(DISTINCT user_id) from cw_report c1
+		<include refid="queryReportWhere" />
+	</select>
+	<sql id="queryReportWhere">
+		<where>
+			<if test="reportId != null and reportId != -1">
+				and report_id = #{reportId}
+			</if>
+			<if test="newsId != null and newsId != -1">
+				and c1.news_id = #{newsId}
+			</if>
+			<if test="userId != null and userId != -1">
+				and c1.user_id = #{userId}
+			</if>
+			<if test="detail != null and detail != ''">
+				and detail like concat('%',#{detail},'%')
+			</if>
+			<if test="time != null and time != ''">
+				and time = #{time}
+			</if>
+			<if test="ip != null and ip != ''">
+				and ip = #{ip}
+			</if>
+		</where>
+	</sql>
+</mapper>

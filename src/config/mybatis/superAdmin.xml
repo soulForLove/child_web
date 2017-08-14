@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lzt.asyn.sysmgr.dao.SuperAdminDao">
+	<resultMap type="com.lzt.asyn.sysmgr.model.SuperAdmin" id="resSmadmin">
+		<result property="superAdminId" column="sAdmin_id" />
+		<result property="loginName" column="login_name" />
+		<result property="tel" column="tel" />
+		<result property="email" column="email" />
+		<result property="password" column="password" />
+		<result property="adminName" column="admin_name" />
+	</resultMap>
+	<insert id="insert" parameterType="com.lzt.asyn.sysmgr.model.SuperAdmin">
+		<selectKey resultType="Long" keyProperty="superAdminId" order="AFTER">
+			select last_insert_id()
+		</selectKey>
+		insert into cw_sAdmin
+		(login_name,tel,email,password,admin_name)
+		values
+		(#{loginName,jdbcType=VARCHAR},#{tel,jdbcType=VARCHAR},#{email,jdbcType=VARCHAR},#{password},#{adminName,jdbcType=VARCHAR})
+	</insert>
+	<sql id="searchSql">
+		select sAdmin_id,login_name,tel,email,password,admin_name from cw_sAdmin
+	</sql>
+	<!-- 登录 -->
+	<select id="login" parameterType="string"
+		resultMap="resSmadmin">
+		<include refid="searchSql" />
+		 where login_name=#{login_name} and password=#{password}
+	</select>
+	<delete id="delete" parameterType="String">
+		delete from cw_sAdmin where
+		sAdmin_id = #{id}
+	</delete>
+	<select id="sameUser" parameterType="string" resultMap="resSmadmin">
+		select
+		sAdmin_id,login_name,tel,email,password,admin_name from cw_sAdmin t
+		where login_name=#{login_name}
+	</select>
+	<update id="update" parameterType="com.lzt.asyn.sysmgr.model.SuperAdmin">
+		update cw_sAdmin
+		<set>
+			<if test="loginName != null and loginName != ''">login_name = #{loginName},</if>
+			<if test="tel != null and tel != ''">tel = #{tel},</if>
+			<if test="email != null and email != ''">email = #{email},</if>
+			<if test="password != null and password != ''">password = #{password},</if>
+			<if test="adminName != null and adminName != ''">admin_name = #{adminName},</if>
+		</set>
+		where sAdmin_id = #{superAdminId}
+	</update>
+	<sql id="querySmadminCommon">
+		select sAdmin_id,login_name,tel,email,password,admin_name 
+		from cw_sAdmin t
+	</sql>
+
+	<select id="getById" parameterType="Long" resultMap="resSmadmin">
+		<include refid="querySmadminCommon" />
+		where sAdmin_id = #{id}
+	</select>
+
+	<select id="queryByArgs" parameterType="com.lzt.asyn.sysmgr.model.SuperAdmin"
+		resultMap="resSmadmin">
+		<include refid="querySmadminCommon" />
+		<include refid="querySmadminWhere" />
+		order by t.sAdmin_id
+		<if test="beginRowNum!=null and rows!=null">
+			limit #{beginRowNum},#{rows}
+		</if>
+	</select>
+
+	<select id="queryByArgsCount" parameterType="com.lzt.asyn.sysmgr.model.SuperAdmin"
+		resultType="Long">
+		select count(1) from cw_sAdmin t
+		<include refid="querySmadminWhere" />
+	</select>
+	<sql id="querySmadminWhere">
+		<where>
+			<if test="superAdminId != null and superAdminId != -1">
+				and sAdmin_id = #{superAdminId}
+			</if>
+			<if test="loginName != null and loginName != ''">
+				and login_name = #{loginName}
+			</if>
+			<if test="tel != null and tel != ''">
+				and tel like concat('%',#{tel},'%')
+			</if>
+			<if test="email != null and email != ''">
+				and email = #{email}
+			</if>
+			<if test="password != null and password != ''">
+				and password = #{password}
+			</if>
+			<if test="adminName != null and adminName != ''">
+				and admin_name like concat('%',#{adminName},'%')
+			</if>
+		</where>
+	</sql>
+</mapper>
